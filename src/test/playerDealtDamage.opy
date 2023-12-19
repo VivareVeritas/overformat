@@ -6,9 +6,9 @@ rule "@Main_Events Player Dealt Damage":
     @Condition eventPlayer.IsLoadingIn == false
     
 
-#Track First kill time for stats
-if eventPlayer.FirstKillTime == 0:
-	eventPlayer.FirstKillTime = getTotalTimeElapsed()
+    #Track First kill time for stats
+    if eventPlayer.FirstKillTime == 0:
+        eventPlayer.FirstKillTime = getTotalTimeElapsed()
 
     #Track Sleep Kills
     if eventAbility == Button.ABILITY_1:

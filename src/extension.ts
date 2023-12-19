@@ -13,6 +13,10 @@ export function activate(context: vscode.ExtensionContext) {
           const line = document.lineAt(i);
           const trimmedLine = line.text.trimStart();
           const currentIndent = line.firstNonWhitespaceCharacterIndex;
+          //! for each line until begins with "rule": set indent to 0
+          //! for each line after "rule": if line is 0 indent, see if lineAt(i+1) is greater indent, if true then for each line until i+1 is less indent than i: add all lines to groupedLines array and increase the indent level of the whole group and clear the list
+          //! if any i+1 has an indent of more than 1 in reference to i, for each line until i+1 is less indent than i: add all lines to groupedLines array and decrease increment of groupedLines by 1, clear groupedLines
+          //! handle missing semicolons
 
           // Adjust indentation level based on the keywords
           if (startsWithKeyword(trimmedLine)) {
@@ -27,7 +31,6 @@ export function activate(context: vscode.ExtensionContext) {
             }
           }
 
-          // Add colon at the end of the line if it contains a keyword and doesn't end with a colon
           // Add colon at the end of the line if it contains a keyword and doesn't end with a colon
           if (containsKeywordWithoutColon(trimmedLine)) {
             const position = new vscode.Position(i, line.text.length);
@@ -53,19 +56,7 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 function startsWithKeyword(line: string): boolean {
-  const keywords = ["if", "for", "while"];
-  return keywords.some((keyword) => line.trimStart().startsWith(keyword));
-}
-
-function containsKeywordWithoutColon(line: string): boolean {
-  const keywords = ["if", "for", "while"];
-  return keywords.some(
-    (keyword) => line.includes(keyword) && !line.trimEnd().endsWith(":")
-  );
-}
-
-function startsWithElseOrElif(line: string): boolean {
-  const keywords = ["else", "elif"];
+  const keywords = ["if", "for", "while", "else", "elif"];
   return keywords.some((keyword) => line.trimStart().startsWith(keyword));
 }
 
