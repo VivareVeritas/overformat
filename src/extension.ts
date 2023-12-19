@@ -1,37 +1,76 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+  let myFormattingProvider =
+    vscode.languages.registerDocumentFormattingEditProvider("overpy", {
+      provideDocumentFormattingEdits(
+        document: vscode.TextDocument
+      ): vscode.TextEdit[] {
+        let edits: vscode.TextEdit[] = [];
+        let indentStack: number[] = [0];
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "overformat" is now active!');
+        for (let i = 0; i < document.lineCount; i++) {
+          const line = document.lineAt(i);
+          const trimmedLine = line.text.trimStart();
+          const currentIndent = line.firstNonWhitespaceCharacterIndex;
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('overformat.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from overFormat!');
-	});
-
-	context.subscriptions.push(disposable);
-
-    let myFormattingProvider = vscode.languages.registerDocumentFormattingEditProvider('overpy', {
-        provideDocumentFormattingEdits(document: vscode.TextDocument): vscode.TextEdit[] {
-            const firstLine = document.lineAt(0);
-            if (firstLine.text !== '42') {
-                return [vscode.TextEdit.insert(firstLine.range.start, '42\n')];
+          // Adjust indentation level based on the keywords
+          if (startsWithKeyword(trimmedLine)) {
+            indentStack[indentStack.length - 1]++;
+          } else if (startsWithElseOrElif(trimmedLine)) {
+            indentStack[indentStack.length - 1]--;
+          } else if (i < document.lineCount - 1) {
+            const nextLine = document.lineAt(i + 1);
+            const nextIndent = nextLine.firstNonWhitespaceCharacterIndex;
+            if (nextIndent < currentIndent) {
+              indentStack[indentStack.length - 1]--;
             }
-			return [];
+          }
+
+          // Add colon at the end of the line if it contains a keyword and doesn't end with a colon
+          // Add colon at the end of the line if it contains a keyword and doesn't end with a colon
+          if (containsKeywordWithoutColon(trimmedLine)) {
+            const position = new vscode.Position(i, line.text.length);
+            edits.push(vscode.TextEdit.insert(position, ":"));
+          }
+
+          // Replace current indentation with the desired indentation
+          let desiredIndent = calculateIndentation(
+            indentStack[indentStack.length - 1]
+          );
+          const range = new vscode.Range(
+            new vscode.Position(i, 0),
+            new vscode.Position(i, currentIndent)
+          );
+          edits.push(vscode.TextEdit.replace(range, desiredIndent));
         }
+
+        return edits;
+      },
     });
 
-	context.subscriptions.push(myFormattingProvider);
+  context.subscriptions.push(myFormattingProvider);
+}
+
+function startsWithKeyword(line: string): boolean {
+  const keywords = ["if", "for", "while"];
+  return keywords.some((keyword) => line.trimStart().startsWith(keyword));
+}
+
+function containsKeywordWithoutColon(line: string): boolean {
+  const keywords = ["if", "for", "while"];
+  return keywords.some(
+    (keyword) => line.includes(keyword) && !line.trimEnd().endsWith(":")
+  );
+}
+
+function startsWithElseOrElif(line: string): boolean {
+  const keywords = ["else", "elif"];
+  return keywords.some((keyword) => line.trimStart().startsWith(keyword));
+}
+
+function calculateIndentation(indentLevel: number): string {
+  return "\t".repeat(indentLevel);
 }
 
 // This method is called when your extension is deactivated
