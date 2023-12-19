@@ -9,16 +9,23 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage:overpy"
+  ],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "overformat.helloWorld",
-        "title": "Hello World"
-      }
+    "languages": [
+        {
+            "id": "overpy",
+            "aliases": [
+                "OverPy"
+            ],
+            "extensions": [
+                ".opy"
+            ]
+        }
     ]
-  },
+},
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
