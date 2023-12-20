@@ -1,5 +1,5 @@
 #!mainFile "../main.opy"
-rule "@Main_Events Player Dealt Damage":
+    rule "@Main_Events Player Dealt Damage":
     @Event playerDealtDamage
     @Hero ana
     @Condition attacker != victim == true
