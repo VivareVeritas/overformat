@@ -32,6 +32,13 @@ export function activate(context: vscode.ExtensionContext) {
             indentStack[i] = currentIndents[i];
           }
 
+          //make sure nothing is on rule level
+          if (currentIndent < 4 && reachedRule) {
+            indentStack[i] = 1;
+          }
+
+          if (startsWithKeyword(trimmedLine)) {
+          }
           //reached rule
           if (trimmedLine.startsWith("rule")) {
             reachedRule = true;
@@ -57,6 +64,18 @@ export function activate(context: vscode.ExtensionContext) {
             new vscode.Position(i, currentIndent)
           );
 
+          if (
+            startsWithKeyword(trimmedLine) &&
+            !trimmedLine.trimEnd().endsWith(":")
+          ) {
+            const range = new vscode.Range(
+              new vscode.Position(i, 0),
+              new vscode.Position(i, line.text.length)
+            );
+            edits.push(
+              vscode.TextEdit.replace(range, `${line.text.trimEnd()}:`)
+            );
+          }
           //replace current indentation with desired indentation
           edits.push(vscode.TextEdit.replace(range, desiredIndent));
         }
@@ -70,20 +89,13 @@ export function activate(context: vscode.ExtensionContext) {
 
 //functions defined below:
 function startsWithKeyword(line: string): boolean {
-  const keywords = ["if", "for", "while"];
-  return keywords.some((keyword) => line.trimStart().startsWith(keyword));
-}
-
-function containsKeywordWithoutColon(line: string): boolean {
-  const keywords = ["if", "for", "while"];
-  return keywords.some(
-    (keyword) => line.includes(keyword) && !line.trimEnd().endsWith(":")
-  );
-}
-
-function startsWithElseOrElif(line: string): boolean {
-  const keywords = ["else", "elif"];
-  return keywords.some((keyword) => line.trimStart().startsWith(keyword));
+  const keywords = ["if", "for", "while", "else", "elif"];
+  for (const keyword of keywords) {
+    if (line.trimStart().startsWith(keyword)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function calculateIndentation(indentLevel: number): string {
