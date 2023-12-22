@@ -63,7 +63,6 @@ export function activate(context: vscode.ExtensionContext) {
           edits.push(vscode.TextEdit.replace(range, desiredIndent));
         }
 
-        console.log("edits: " + edits);
         return edits;
       },
     });
