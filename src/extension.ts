@@ -6,9 +6,11 @@ export function activate(context: vscode.ExtensionContext) {
       provideDocumentFormattingEdits(
         document: vscode.TextDocument
       ): vscode.TextEdit[] {
+        //define variables
         let edits: vscode.TextEdit[] = [];
         let indentStack: number[] = [0];
 
+        //for each line
         for (let i = 0; i < document.lineCount; i++) {
           const line = document.lineAt(i);
           const trimmedLine = line.text.trimStart();
