@@ -9,8 +9,9 @@ export function activate(context: vscode.ExtensionContext) {
         //define variables
         let edits: vscode.TextEdit[] = []; //edits that we will return to the editor to apply
         let indentStack: number[] = [0]; //current line being inspected for indentation
-        let desiredIndent: string = ""; //desired indentation for the current line
+        let currentIndents: number[] = [];
         let reachedRule: boolean = false; //whether we have reached the rule or not
+        let groupedLines: number[] = []; //lines that are grouped together (e.g. if statement)
 
         //for each line - most logic should happen in here
         for (let i = 0; i < document.lineCount; i++) {
@@ -18,40 +19,37 @@ export function activate(context: vscode.ExtensionContext) {
           const line = document.lineAt(i);
           const trimmedLine = line.text.trimStart();
           const currentIndent = line.firstNonWhitespaceCharacterIndex;
+          const nextIndent = line.firstNonWhitespaceCharacterIndex;
+          const currentIndentsRounded = Math.ceil(currentIndent / 4);
+          currentIndents.push(currentIndentsRounded); // Store the current indentation level in the array
 
-          //check if we've reached rule
+          //indents to 0 if not reached rule
           if (reachedRule === false) {
-            indentStack[indentStack.length - 1] = 0;
-          } else {
-            indentStack[indentStack.length - 1] = 1;
+            indentStack[i] = 0;
+          }
+          //indents to currentIndents if reached rule
+          if (reachedRule) {
+            indentStack[i] = currentIndents[i];
           }
 
+          //reached rule
           if (trimmedLine.startsWith("rule")) {
             reachedRule = true;
           }
-          // // Adjust indentation level based on the keywords
-          // if (startsWithKeyword(trimmedLine)) {
-          //   indentStack[indentStack.length - 1]++;
-          // } else if (startsWithElseOrElif(trimmedLine)) {
-          //   indentStack[indentStack.length - 1]--;
-          // } else if (i < document.lineCount - 1) {
-          //   const nextLine = document.lineAt(i + 1);
-          //   const nextIndent = nextLine.firstNonWhitespaceCharacterIndex;
-          //   if (nextIndent < currentIndent) {
-          //     indentStack[indentStack.length - 1]--;
-          //   }
-          // }
 
-          // // Add colon at the end of the line if it contains a keyword and doesn't end with a colon
-          // if (containsKeywordWithoutColon(trimmedLine)) {
-          //   const position = new vscode.Position(i, line.text.length);
-          //   edits.push(vscode.TextEdit.insert(position, ":"));
-          // }
+          console.log(
+            i +
+              ":" +
+              "indentStack: " +
+              indentStack[i] +
+              " currentIndents: " +
+              currentIndents[i] +
+              " rule: " +
+              reachedRule
+          );
 
           // Replace current indentation with the desired indentation at specific point in indentStack
-          let desiredIndent = calculateIndentation(
-            indentStack[indentStack.length - 1]
-          );
+          let desiredIndent = calculateIndentation(indentStack[i]);
 
           // get the current range of space between the start of the line and the first non-whitespace character
           const range = new vscode.Range(
@@ -62,7 +60,6 @@ export function activate(context: vscode.ExtensionContext) {
           //replace current indentation with desired indentation
           edits.push(vscode.TextEdit.replace(range, desiredIndent));
         }
-
         return edits;
       },
     });
@@ -90,7 +87,7 @@ function startsWithElseOrElif(line: string): boolean {
 }
 
 function calculateIndentation(indentLevel: number): string {
-  return "\t".repeat(indentLevel);
+  return "    ".repeat(indentLevel);
 }
 
 // This method is called when your extension is deactivated
