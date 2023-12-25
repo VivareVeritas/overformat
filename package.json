@@ -1,13 +1,19 @@
 {
   "name": "overformat",
   "displayName": "overFormat",
+  "publisher": "VivareVeritas",
   "description": "formatter for OverPy",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.85.0"
   },
+  "icon": "OverFormatLogo.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/VivareVeritas/overformat"
+  },
   "categories": [
-    "Other"
+    "Formatters"
   ],
   "activationEvents": [
     "onLanguage:overpy"
@@ -15,17 +21,17 @@
   "main": "./out/extension.js",
   "contributes": {
     "languages": [
-        {
-            "id": "overpy",
-            "aliases": [
-                "OverPy"
-            ],
-            "extensions": [
-                ".opy"
-            ]
-        }
+      {
+        "id": "overpy",
+        "aliases": [
+          "OverPy"
+        ],
+        "extensions": [
+          ".opy"
+        ]
+      }
     ]
-},
+  },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
