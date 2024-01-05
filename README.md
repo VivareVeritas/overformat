@@ -39,8 +39,6 @@ Calling out known issues can help limit users opening duplicate issues against y
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
-
 ### 0.0.1
 
 Initial release of OverFormat. Implemented:
@@ -52,15 +50,13 @@ Initial release of OverFormat. Implemented:
 
 - added icon
 - opened repository
-<!-- ### 1.0.1
 
-Fixed issue #.
+### 0.0.3
 
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
+- fixed:
+  - PlayerVariables
+  - GlobalVariables
+  - def Subroutines
 
 ## Following extension guidelines
 

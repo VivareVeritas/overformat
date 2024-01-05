@@ -40,7 +40,11 @@ export function activate(context: vscode.ExtensionContext) {
           if (startsWithKeyword(trimmedLine)) {
           }
           //reached rule
-          if (trimmedLine.startsWith("rule")) {
+          if (
+            (trimmedLine.startsWith("rule") || trimmedLine.startsWith("def")) &&
+            !trimmedLine.includes("PlayerVariables") &&
+            !trimmedLine.includes("GlobalVariables")
+          ) {
             reachedRule = true;
           }
 
