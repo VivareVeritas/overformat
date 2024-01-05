@@ -3,7 +3,7 @@
   "displayName": "overFormat",
   "publisher": "VivareVeritas",
   "description": "formatter for OverPy",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.85.0"
   },
