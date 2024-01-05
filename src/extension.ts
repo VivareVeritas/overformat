@@ -43,7 +43,8 @@ export function activate(context: vscode.ExtensionContext) {
           if (
             (trimmedLine.startsWith("rule") || trimmedLine.startsWith("def")) &&
             !trimmedLine.includes("PlayerVariables") &&
-            !trimmedLine.includes("GlobalVariables")
+            !trimmedLine.includes("GlobalVariables") &&
+            !trimmedLine.includes("Subroutine")
           ) {
             reachedRule = true;
           }
